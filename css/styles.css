@@ -130,7 +130,7 @@ button { cursor: pointer; }
 .competition-bar { border-bottom: 1px solid var(--line); background: var(--surface); }
 .competition-scroll { display: flex; align-items: center; gap: 2px; overflow-x: auto; scrollbar-width: none; }
 .competition-scroll::-webkit-scrollbar { display: none; }
-.competition-chip { flex: 0 0 auto; padding: 12px 13px 10px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--muted); font-size: .76rem; font-weight: 800; text-transform: uppercase; }
+.competition-chip { display: inline-flex; align-items: center; flex: 0 0 auto; padding: 12px 13px 10px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--muted); font-size: .76rem; font-weight: 800; text-transform: uppercase; }
 .competition-chip:hover, .competition-chip.active { color: var(--text); border-color: var(--brand); }
 
 .hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--line); }
@@ -187,7 +187,7 @@ html[data-theme="dark"] .status.verified { background: #153429; border-color: #2
 
 .toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 26px; }
 .filter-group { display: flex; flex-wrap: wrap; gap: 7px; }
-.filter-button { min-height: 40px; padding: 0 13px; border: 1px solid var(--line); border-radius: 3px; background: var(--card); color: var(--muted); font-size: .77rem; font-weight: 800; text-transform: uppercase; }
+.filter-button { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 0 13px; border: 1px solid var(--line); border-radius: 3px; background: var(--card); color: var(--muted); font-size: .77rem; font-weight: 800; text-transform: uppercase; }
 .filter-button:hover, .filter-button.active { background: var(--text); border-color: var(--text); color: var(--bg); }
 .search-input, .select-input { min-height: 44px; border: 1px solid var(--line); border-radius: 3px; background: var(--card); color: var(--text); padding: 0 13px; }
 .search-input { width: min(100%, 330px); }
