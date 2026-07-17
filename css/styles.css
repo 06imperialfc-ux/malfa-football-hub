@@ -408,3 +408,42 @@ html[data-theme="dark"] .status.verified { background: #153429; border-color: #2
   .division-filter { flex-basis: calc(50% - 8px); }
   .score-input-row { gap: 7px; }
 }
+
+/* MALFA championship, promotion and relegation rules */
+.position-marker.playoff { background: var(--success); }
+.league-table tr.position-playoff td:first-child { box-shadow: inset 4px 0 0 var(--success); }
+.league-table tr.position-relegation td:first-child { box-shadow: inset 4px 0 0 var(--danger); }
+.table-legend { display: flex; flex-wrap: wrap; gap: 16px; margin: 13px 0 0; color: var(--muted); font-size: .76rem; font-weight: 750; }
+.table-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.legend-marker { width: 4px; height: 20px; display: inline-block; background: var(--line); }
+.legend-marker.playoff { background: var(--success); }
+.legend-marker.relegation { background: var(--danger); }
+.playoff-pathway { margin-top: 24px; padding: 22px; border: 1px solid var(--line); border-left: 5px solid var(--brand); background: var(--surface); }
+.playoff-pathway-head, .playoff-overview-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; }
+.playoff-pathway h3, .playoff-overview-card h3 { margin: 4px 0 0; }
+.eyebrow { color: var(--muted); font-size: .68rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.playoff-qualifier-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 9px; margin: 18px 0; }
+.playoff-qualifier { display: grid; gap: 5px; padding: 14px; border: 1px solid var(--line); background: var(--card); }
+.playoff-qualifier:hover { border-color: var(--brand); }
+.playoff-qualifier small, .playoff-qualifier span, .playoff-overview-leaders small { color: var(--muted); font-size: .68rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+.playoff-final-line { display: flex; justify-content: space-between; gap: 16px; padding: 13px 15px; background: var(--ink); color: #fff; }
+.playoff-final-line span { font-weight: 800; }
+.playoff-pathway > p { margin: 14px 0 0; color: var(--muted); font-size: .83rem; }
+.playoff-hub, .cup-hub { display: grid; gap: 18px; }
+.cup-hub { margin-top: 52px; }
+.compact-head { margin-bottom: 0; }
+.playoff-overview-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
+.playoff-overview-card { display: grid; gap: 16px; padding: 22px; border: 1px solid var(--line); background: var(--card); }
+.playoff-overview-card > p { margin: 0; color: var(--muted); font-size: .83rem; }
+.playoff-overview-leaders { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+.playoff-overview-leaders > div { display: grid; gap: 5px; padding: 12px; background: var(--surface); }
+.playoff-outcome { padding-top: 12px; border-top: 1px solid var(--line); color: var(--brand); font-size: .75rem; font-weight: 900; text-transform: uppercase; }
+@media (max-width: 760px) {
+  .playoff-overview-grid { grid-template-columns: 1fr; }
+  .playoff-pathway-head, .playoff-overview-head, .playoff-final-line { align-items: flex-start; flex-direction: column; }
+}
+@media (max-width: 480px) {
+  .playoff-overview-leaders { grid-template-columns: 1fr; }
+}
+
+.sr-only { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important; }
