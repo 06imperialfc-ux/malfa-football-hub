@@ -31,10 +31,19 @@ function competitionHref(value){const u=new URL(location.href);value==="all"?u.s
 function entriesForClub(id){return state.entries.filter(e=>e.club_id===id&&e.active!==false).map(e=>e.competition_id)}
 function clubsForCompetition(id){const ids=new Set(state.entries.filter(e=>e.competition_id===id&&e.active!==false).map(e=>e.club_id));return state.clubs.filter(c=>ids.has(c.id)&&c.active!==false)}
 
-async function loadData(){
+function loadLocalData(){
   const local=localData(); Object.assign(state,{competitions:local.competitions||[],clubs:local.clubs||[],entries:local.entries||[],fixtures:local.fixtures||[],standings:local.standings||[],news:local.news||[],partners:local.partners||[],settings:local.settings||{}});
-  const db=client(); if(!db)return;
-  const [co,cl,en,fi,st,nw,pa,se]=await Promise.all([
+}
+function waitForSupabase(timeout=5000){
+  if(window.supabase?.createClient)return Promise.resolve(true);
+  const script=document.getElementById("supabaseSdk");
+  if(!script)return Promise.resolve(false);
+  return new Promise(resolve=>{let done=false;const finish=value=>{if(done)return;done=true;clearTimeout(timer);resolve(value)};const timer=setTimeout(()=>finish(false),timeout);script.addEventListener("load",()=>finish(Boolean(window.supabase?.createClient)),{once:true});script.addEventListener("error",()=>finish(false),{once:true})});
+}
+async function loadRemoteData(){
+  if(!await waitForSupabase()||!configured())return false;
+  const db=client();
+  const request=Promise.all([
     db.from("competitions").select("*").eq("active",true).order("sort_order"),
     db.from("clubs").select("*").eq("active",true).order("name"),
     db.from("competition_entries").select("*").eq("active",true),
@@ -44,7 +53,9 @@ async function loadData(){
     db.from("partners").select("*").eq("active",true).order("display_order"),
     db.from("site_settings").select("key,value")
   ]);
+  const [co,cl,en,fi,st,nw,pa,se]=await Promise.race([request,new Promise((_,reject)=>setTimeout(()=>reject(new Error("CMS request timed out")),8000))]);
   if(!co.error)state.competitions=co.data||[]; if(!cl.error)state.clubs=cl.data||[]; if(!en.error)state.entries=en.data||[]; if(!fi.error)state.fixtures=fi.data||[]; if(!st.error)state.standings=st.data||[]; if(!nw.error)state.news=nw.data||[]; if(!pa.error)state.partners=pa.data||[]; if(!se.error)state.settings=Object.fromEntries((se.data||[]).map(x=>[x.key,x.value]));
+  return true;
 }
 
 function navItems(){return[["Home","index.html","home"],["Results","matches.html","matches"],["Fixtures","fixtures.html","fixtures"],["Tables","standings.html","standings"],["Clubs","clubs.html","clubs"],["News","news.html","news"],["Tournaments","tournaments.html","tournaments"],["Partners","partners.html","partners"]]}
@@ -100,5 +111,10 @@ function renderClub(){const key=new URLSearchParams(location.search).get("id");c
 function renderArticle(){const key=new URLSearchParams(location.search).get("id");const n=state.news.find(x=>x.id===key||x.slug===key);const m=$("#newsArticle");if(!n){m.innerHTML=`<section class="section"><div class="container">${empty("Article not found","This story is unavailable.","404")}</div></section>`;return}const body=String(n.body||n.excerpt||"").split(/\n{2,}/).filter(Boolean).map(p=>`<p>${esc(p).replace(/\n/g,"<br>")}</p>`).join("");m.innerHTML=`<article class="article-layout"><header class="article-header"><p class="kicker">${esc(n.category||"Football News")}</p><h1 class="heading">${esc(n.title)}</h1><p class="lead">${esc(n.excerpt||"")}</p><div class="news-meta" style="margin-top:22px"><span>${esc(n.competition_id?competitionLabel(n.competition_id):"MALFA")}</span><span>${esc(fmtDate(n.published_at))}</span></div></header>${n.image_url?`<img class="article-image" src="${attr(n.image_url)}" alt="">`:""}<div class="article-body">${body}</div></article>`}
 function renderPage(){({home:renderHome,matches:renderMatches,fixtures:renderFixtures,standings:renderStandings,clubs:renderClubs,news:renderNews,competitions:renderCompetitions,tournaments:renderTournaments,partners:renderPartners,club:renderClub,article:renderArticle})[PAGE]?.();observe()}
 let observer;function observe(){const els=$$(".reveal:not(.visible)");if(!("IntersectionObserver"in window)){els.forEach(e=>e.classList.add("visible"));return}observer||=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add("visible");observer.unobserve(e.target)}}),{threshold:.08});els.forEach(e=>observer.observe(e))}
-async function init(){renderHeader();renderFooter();await loadData();if(state.competition!=="all"&&!competition(state.competition))state.competition="all";renderPage()}
+async function init(){
+  renderHeader();renderFooter();loadLocalData();
+  if(state.competition!=="all"&&!competition(state.competition))state.competition="all";
+  renderPage();
+  try{if(await loadRemoteData()){if(state.competition!=="all"&&!competition(state.competition))state.competition="all";renderPage()}}catch(err){console.warn("MALFA CMS unavailable; showing cached content.",err.message)}
+}
 document.addEventListener("DOMContentLoaded",init);
