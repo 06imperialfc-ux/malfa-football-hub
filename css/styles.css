@@ -78,7 +78,6 @@ button { cursor: pointer; }
   letter-spacing: .14em;
   text-transform: uppercase;
 }
-.kicker::before { content: ""; width: 24px; height: 3px; background: currentColor; }
 .display, .heading, .page-title, h1, h2, h3 { font-family: var(--font-display); }
 .display { margin: 0; font-size: clamp(3.2rem, 8vw, 7.8rem); line-height: .9; letter-spacing: -.07em; font-weight: 900; text-transform: uppercase; }
 .display .accent { color: var(--brand); }
