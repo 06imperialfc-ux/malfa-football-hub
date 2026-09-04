@@ -47,6 +47,8 @@ join auth.users au on au.id = adm.user_id;
 
 Only users listed in `public.admin_users` can edit the CMS.
 
+After the first superadmin exists, run `malfa-role-scope-migration.sql`. The separate admin portal can then grant `league_admin` access to selected competitions and `club_admin` access to selected clubs. A target email must already exist in Supabase Authentication before access can be granted.
+
 ## 4. Lock down public sign-ups
 
 Open the Supabase authentication settings and disable **Allow new users to sign up**. Existing authorised users can still sign in.

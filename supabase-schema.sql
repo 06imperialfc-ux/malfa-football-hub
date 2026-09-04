@@ -125,7 +125,7 @@ create table if not exists public.site_settings (
 -- Explicit administrator allow-list. Merely having a Supabase Auth account does not grant editing access.
 create table if not exists public.admin_users (
   user_id uuid primary key references auth.users(id) on delete cascade,
-  role text not null default 'admin' check (role in ('admin','super_admin')),
+  role text not null default 'club_admin' check (role in ('super_admin','league_admin','club_admin')),
   active boolean not null default true,
   created_at timestamptz not null default now()
 );

@@ -40,11 +40,11 @@ Authorised administrators can manage:
 - football news
 - sponsors and partners
 
-## Demo and live modes
+## Live data
 
-With blank values in `js/cms-config.js`, the website runs in local demo mode and browser changes are not shared.
+The public website reads published records from Supabase. It does not substitute demo competition data when the CMS is unavailable.
 
-After a Supabase project URL and publishable key are added, the same site runs as a live shared CMS. The status in `admin.html` changes to **Live CMS**.
+The administration interface is retained in the repository for deployment on a separate, restricted admin domain. The public Vercel deployment blocks `/admin` and `/admin.html` and exposes no administrator links.
 
 ## Launch order
 
