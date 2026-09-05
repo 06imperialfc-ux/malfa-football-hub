@@ -27,28 +27,41 @@ function competitionHref(value){const u=new URL(location.href);value==="all"?u.s
 function entriesForClub(id){return state.entries.filter(e=>e.club_id===id&&e.active!==false).map(e=>e.competition_id)}
 function clubsForCompetition(id){const ids=new Set(state.entries.filter(e=>e.competition_id===id&&e.active!==false).map(e=>e.club_id));return state.clubs.filter(c=>ids.has(c.id)&&c.active!==false)}
 
-function waitForSupabase(timeout=5000){
-  if(window.supabase?.createClient)return Promise.resolve(true);
-  const script=document.getElementById("supabaseSdk");
-  if(!script)return Promise.resolve(false);
-  return new Promise(resolve=>{let done=false;const finish=value=>{if(done)return;done=true;clearTimeout(timer);resolve(value)};const timer=setTimeout(()=>finish(false),timeout);script.addEventListener("load",()=>finish(Boolean(window.supabase?.createClient)),{once:true});script.addEventListener("error",()=>finish(false),{once:true})});
-}
+const PAGE_DATA={
+  home:["competitions","clubs","fixtures","standings","news","partners"],
+  matches:["competitions","clubs","fixtures"],fixtures:["competitions","clubs","fixtures"],
+  standings:["competitions","clubs","standings"],clubs:["competitions","clubs","entries"],
+  club:["competitions","clubs","entries","fixtures"],news:["competitions","news"],
+  article:["news"],competitions:["competitions","entries"],tournaments:["competitions","clubs","standings"],partners:["partners"]
+};
+const DATA_TABLES={entries:"competition_entries",news:"news_posts"};
 async function loadRemoteData(){
-  if(!await waitForSupabase()||!configured())return false;
-  const db=client();
-  const request=Promise.all([
-    db.from("competitions").select("*").eq("active",true).order("sort_order"),
-    db.from("clubs").select("*").eq("active",true).order("name"),
-    db.from("competition_entries").select("*").eq("active",true),
-    db.from("fixtures").select("id,competition_id,season,matchday,round_name,kickoff_at,venue,home_club_id,away_club_id,home_score,away_score,status,verified,featured").order("kickoff_at"),
-    db.from("standings").select("*"),
-    db.from("news_posts").select("*").eq("published",true).order("published_at",{ascending:false}),
-    db.from("partners").select("*").eq("active",true).order("display_order"),
-    db.from("site_settings").select("key,value")
-  ]);
-  const [co,cl,en,fi,st,nw,pa,se]=await Promise.race([request,new Promise((_,reject)=>setTimeout(()=>reject(new Error("CMS request timed out")),8000))]);
-  if(!co.error)state.competitions=co.data||[]; if(!cl.error)state.clubs=cl.data||[]; if(!en.error)state.entries=en.data||[]; if(!fi.error)state.fixtures=fi.data||[]; if(!st.error)state.standings=st.data||[]; if(!nw.error)state.news=nw.data||[]; if(!pa.error)state.partners=pa.data||[]; if(!se.error)state.settings=Object.fromEntries((se.data||[]).map(x=>[x.key,x.value]));
-  return true;
+  const datasets=PAGE_DATA[PAGE]||[];
+  if(!datasets.length)return;
+  const config=window.MALFA_CMS||{};
+  if(!config.supabaseUrl||!cmsKey())throw new Error("Live data is not configured");
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),4000);
+  try{
+    const results=await Promise.all(datasets.map(async key=>{
+      const url=new URL(config.supabaseUrl+"/rest/v1/"+(DATA_TABLES[key]||key));
+      url.searchParams.set("select",key==="fixtures"?"id,competition_id,season,matchday,round_name,kickoff_at,venue,home_club_id,away_club_id,home_score,away_score,status,verified,featured":"*");
+      if(["competitions","clubs","entries","partners"].includes(key))url.searchParams.set("active","eq.true");
+      if(key==="competitions")url.searchParams.set("visible","eq.true");
+      if(key==="news"){url.searchParams.set("published","eq.true");url.searchParams.set("order","published_at.desc")}
+      if(["entries","fixtures","standings"].includes(key))url.searchParams.set("season","eq."+CONFIG.season);
+      const response=await fetch(url,{headers:{apikey:cmsKey()},signal:controller.signal});
+      if(!response.ok)throw new Error("Live data request failed");
+      const data=await response.json();
+      if(!Array.isArray(data))throw new Error("Invalid live data response");
+      return [key,data];
+    }));
+    for(const [key,data]of results)state[key]=data;
+  }finally{clearTimeout(timer);controller.abort()}
+}
+function dataMessage(message){
+  const mounts={home:["homeDivisions","homeFeature","homeTable","homeNews","homePartners"],matches:["matchesList"],fixtures:["fixturesList"],standings:["standingsMount"],clubs:["clubsGrid"],club:["clubProfile"],news:["allNews"],article:["newsArticle"],competitions:["allCompetitions"],tournaments:["tournamentList"],partners:["partnersGrid"]};
+  for(const id of mounts[PAGE]||[]){const mount=document.getElementById(id);if(mount)mount.innerHTML='<p role="status" class="muted">'+esc(message)+'</p>'}
 }
 
 function navItems(){return[["Home","index.html","home"],["Results","matches.html","matches"],["Fixtures","fixtures.html","fixtures"],["Tables","standings.html","standings"],["Clubs","clubs.html","clubs"],["News","news.html","news"],["Tournaments","tournaments.html","tournaments"],["Partners","partners.html","partners"]]}
@@ -105,8 +118,9 @@ function renderArticle(){const key=new URLSearchParams(location.search).get("id"
 function renderPage(){({home:renderHome,matches:renderMatches,fixtures:renderFixtures,standings:renderStandings,clubs:renderClubs,news:renderNews,competitions:renderCompetitions,tournaments:renderTournaments,partners:renderPartners,club:renderClub,article:renderArticle})[PAGE]?.();observe()}
 let observer;function observe(){const els=$$(".reveal:not(.visible)");if(!("IntersectionObserver"in window)){els.forEach(e=>e.classList.add("visible"));return}observer||=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add("visible");observer.unobserve(e.target)}}),{threshold:.08});els.forEach(e=>observer.observe(e))}
 async function init(){
-  renderHeader();renderFooter();
-  try{await loadRemoteData()}catch(err){console.warn("MALFA CMS unavailable.",err.message)}
+  renderHeader();renderFooter();observe();
+  dataMessage("Loading current information…");
+  try{await loadRemoteData()}catch(err){dataMessage("Live information is temporarily unavailable. Please try again shortly.");return}
   if(state.competition!=="all"&&!competition(state.competition))state.competition="all";
   renderPage();
 }
