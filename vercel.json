@@ -1,5 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "node scripts/build.cjs",
+  "outputDirectory": "dist",
   "redirects": [
     { "source": "/admin", "destination": "/404.html", "permanent": false },
     { "source": "/admin.html", "destination": "/404.html", "permanent": false }
