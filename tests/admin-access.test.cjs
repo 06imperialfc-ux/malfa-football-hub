@@ -56,3 +56,13 @@ test('failed automatic table publishing propagates to the caller',async()=>{
   run('tableRows=()=>[];persistTable=async()=>{throw new Error("write denied")}');
   await assert.rejects(run('rebuildTable("mpl",true)'),/write denied/);
 });
+test('non-superadmins cannot query audit history',async()=>{
+  const {run}=setup();
+  run('state.adminRole="league_admin";state.client={from(){throw new Error("unexpected query")}}');
+  await assert.doesNotReject(run('loadAudit()'));
+});
+test('non-superadmins cannot populate role editing controls',()=>{
+  const {run}=setup();
+  run('state.adminRole="club_admin";state.admins=[{user_id:"target"}]');
+  assert.doesNotThrow(()=>run('editAccess("target")'));
+});

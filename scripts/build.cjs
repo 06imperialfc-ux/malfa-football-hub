@@ -14,7 +14,9 @@ if(mode==='public'){
   for(const file of fs.readdirSync(root).filter(f=>f.endsWith('.html')&&f!=='admin.html'))copy(file);
   copy('js/site.js');
 }else{
-  copy('admin.html');copy('js/admin.js');
-  fs.copyFileSync(path.join(output,'admin.html'),path.join(output,'index.html'));
+  copy('js/admin.js');
+  const html=fs.readFileSync(path.join(root,'admin.html'),'utf8')
+    .replaceAll('href="index.html"','href="https://malfa-football-hub.vercel.app"');
+  fs.writeFileSync(path.join(output,'index.html'),html);
 }
 console.log(`Built ${mode} deployment in dist`);
