@@ -84,13 +84,13 @@ test('club onboarding controls required by the dashboard script exist',()=>{
 });
 test('every addable admin section has a guided directory, editor, review and skip control',()=>{
   const html=fs.readFileSync(require('node:path').join(__dirname,'../admin.html'),'utf8');
-  for(const name of ['match','news','division','tournament','partner']){
+  for(const name of ['match','news','division','tournament','partner','access']){
     assert.match(html,new RegExp(`id=["']${name}DirectoryView["']`));
     assert.match(html,new RegExp(`id=["']${name}EditorView["']`));
     assert.match(html,new RegExp(`data-start-flow=["']${name}["']`));
     assert.match(html,new RegExp(`data-skip-flow=["']${name}["']`));
   }
-  assert.equal((html.match(/data-flow-review/g)||[]).length,5);
+  assert.equal((html.match(/data-flow-review/g)||[]).length,6);
   assert.ok((html.match(/data-optional=["']true["']/g)||[]).length>=5);
 });
 test('guided additions cannot save before review while direct edits can save immediately',()=>{
