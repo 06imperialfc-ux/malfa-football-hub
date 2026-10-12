@@ -5,5 +5,6 @@
 window.MALFA_CMS = {
   supabaseUrl: "https://sfgjhaoulzbsocfgdckh.supabase.co",
   supabasePublishableKey: "sb_publishable_GS9RHzzPGG3HT6t_ZgDNnQ_5JBJmj7X",
-  storageBucket: "league-media"
+  storageBucket: "league-media",
+  adminUrl: "https://malfa-football-hub.vercel.app/malfa-control/"
 };
