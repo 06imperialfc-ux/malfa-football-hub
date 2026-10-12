@@ -43,7 +43,7 @@ Public build: node scripts/build.cjs
 Admin build in PowerShell: $env:MALFA_DEPLOYMENT='admin'; node scripts/build.cjs
 Reset build variable: $env:MALFA_DEPLOYMENT='public'
 
-Both modes output to dist. The public build omits admin.html, js/admin.js and SQL files. The admin build creates dist/index.html from admin.html and includes the admin script. Deploy the admin build as a separate Vercel project with MALFA_DEPLOYMENT=admin and output directory dist. Set MALFA_DEPLOYMENT in the Vercel project environment. The separate admin project is not yet created.
+Both modes output to dist. The public build omits SQL files and publishes the authenticated dashboard at /malfa-control/ without a public link. The admin build creates dist/index.html from admin.html for a future separate admin domain. The current admin address is https://malfa-football-hub.vercel.app/malfa-control/ and still requires Supabase authentication and database permission. A future separate Vercel admin project should use MALFA_DEPLOYMENT=admin and output directory dist.
 
 After deployment, add the admin URL to Supabase Authentication Site URL and allowed redirect URLs. Keep public /admin routes redirected to 404. Production GitHub is the 06imperialfc-ux repository.
 

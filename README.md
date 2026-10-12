@@ -28,7 +28,7 @@ A responsive multi-competition website for the Mamelodi Local Football Associati
 
 ## Administration
 
-Open `admin.html` after completing `CMS-SETUP.md`.
+Open `https://malfa-football-hub.vercel.app/malfa-control/` after completing `CMS-SETUP.md`. The route is unlisted and still requires an authorised Supabase administrator account.
 
 Authorised administrators can manage:
 
@@ -44,7 +44,7 @@ Authorised administrators can manage:
 
 The public website reads published records from Supabase. It does not substitute demo competition data when the CMS is unavailable.
 
-The administration interface is retained in the repository for deployment on a separate, restricted admin domain. The public Vercel deployment blocks `/admin` and `/admin.html` and exposes no administrator links.
+The public Vercel deployment blocks `/admin` and `/admin.html` and exposes no administrator links. The authenticated dashboard is available through the unlisted `/malfa-control/` route until a separate admin domain is deployed.
 
 ## Launch order
 

@@ -3,6 +3,7 @@
   "buildCommand": "node scripts/build.cjs",
   "outputDirectory": "dist",
   "redirects": [
+    { "source": "/malfa-control", "destination": "/malfa-control/", "permanent": false },
     { "source": "/admin", "destination": "/404.html", "permanent": false },
     { "source": "/admin.html", "destination": "/404.html", "permanent": false }
   ],
@@ -33,6 +34,13 @@
       "source": "/js/cms-config.js",
       "headers": [
         { "key": "Cache-Control", "value": "no-store, max-age=0" }
+      ]
+    },
+    {
+      "source": "/malfa-control/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, max-age=0" },
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }
       ]
     }
   ]

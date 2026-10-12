@@ -12,7 +12,16 @@ for(const dir of ['css','assets'])copy(dir);
 for(const file of ['js/theme.js','js/cms-config.js','js/data.js'])copy(file);
 if(mode==='public'){
   for(const file of fs.readdirSync(root).filter(f=>f.endsWith('.html')&&f!=='admin.html'))copy(file);
-  copy('js/site.js');
+  copy('js/site.js');copy('js/admin.js');
+  const adminHtml=fs.readFileSync(path.join(root,'admin.html'),'utf8')
+    .replaceAll('href="index.html"','href="https://malfa-football-hub.vercel.app"')
+    .replaceAll('href="assets/','href="/assets/')
+    .replaceAll('href="css/','href="/css/')
+    .replaceAll('src="assets/','src="/assets/')
+    .replaceAll('src="js/','src="/js/');
+  const adminDir=path.join(output,'malfa-control');
+  fs.mkdirSync(adminDir,{recursive:true});
+  fs.writeFileSync(path.join(adminDir,'index.html'),adminHtml);
 }else{
   copy('js/admin.js');
   const html=fs.readFileSync(path.join(root,'admin.html'),'utf8')
