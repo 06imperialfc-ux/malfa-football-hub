@@ -1,0 +1,98 @@
+MALFA FOOTBALL HUB PROJECT HANDOVER
+Handover date: 12 October 2026
+
+PROJECT PURPOSE
+MALFA Football Hub publishes Mamelodi Local Football Association divisions, clubs, fixtures, verified results, standings, news, tournaments, sponsors and partners. MALFA aims to own its operational website and competition data while preserving the official SAFA/MYSAFA verification relationship until an authorised integration exists. The public website and administrator workspace are separate. A mobile app is later work.
+
+KEY URLS AND SERVICES
+Public site: https://malfa-football-hub.vercel.app
+GitHub production repository: https://github.com/06imperialfc-ux/malfa-football-hub
+Vercel-connected remote: https://github.com/06imperialfc-ux/malfa-football-hub.git
+Historical origin remote: https://github.com/flexbot3003/malfa-football-hub.git
+Supabase project: malfa-live
+Supabase project ref: sfgjhaoulzbsocfgdckh
+Supabase URL: https://sfgjhaoulzbsocfgdckh.supabase.co
+
+CURRENT STATUS
+The public Vercel site responds HTTP 200. Supabase is healthy and returns competition data. These migrations have been run successfully, in order:
+1. supabase-schema.sql (initial schema; do not rerun on secured production)
+2. malfa-security-hardening.sql
+3. malfa-role-scope-migration.sql
+4. malfa-access-boundaries.sql
+
+Temporary first superadmin:
+Email: makuwatetelo8@gmail.com
+User ID: 6ec5873d-aa8b-4152-ad81-e1ca581e7d52
+Role: super_admin; active: true
+Never store its password or any database/service-role secret in Git or this file.
+
+Live checks confirmed the superadmin can manage MPL and read the administrator directory. A nonexistent user has no superadmin or competition-management rights and cannot see the directory or audit records. These checks used rolled-back transactions. The separate admin Vercel deployment and real browser login test remain outstanding.
+
+REPOSITORY MAP
+Public pages: index.html, matches.html, fixtures.html, standings.html, clubs.html, club.html, news.html, article.html, competitions.html, tournaments.html, partners.html, about.html, contact.html, privacy.html and 404.html.
+Admin: admin.html and js/admin.js.
+Client configuration: js/cms-config.js and js/data.js.
+Public scripts and styles: js/site.js, js/theme.js and css/styles.css.
+SQL: supabase-schema.sql, malfa-security-hardening.sql, malfa-role-scope-migration.sql, malfa-access-boundaries.sql.
+Build: scripts/build.cjs.
+Tests: tests/admin-access.test.cjs and tests/public-loading.test.cjs.
+Other guides: CMS-SETUP.md, DEPLOYMENT-CHECKLIST.md, APPLY-SECURITY-PATCH.md, MALFA-SECURITY-POPIA-AUDIT.md, MALFA-DIGITAL-INDEPENDENCE-PROPOSAL.md, PROJECT-SCOPE.md and IMPLEMENTATION-STATUS.md.
+
+BUILD AND DEPLOYMENT
+Public build: node scripts/build.cjs
+Admin build in PowerShell: $env:MALFA_DEPLOYMENT='admin'; node scripts/build.cjs
+Reset build variable: $env:MALFA_DEPLOYMENT='public'
+
+Both modes output to dist. The public build omits admin.html, js/admin.js and SQL files. The admin build creates dist/index.html from admin.html and includes the admin script. Deploy the admin build as a separate Vercel project with MALFA_DEPLOYMENT=admin and output directory dist. Set MALFA_DEPLOYMENT in the Vercel project environment. The separate admin project is not yet created.
+
+After deployment, add the admin URL to Supabase Authentication Site URL and allowed redirect URLs. Keep public /admin routes redirected to 404. Production GitHub is the 06imperialfc-ux repository.
+
+DATABASE ROLES AND SECURITY
+super_admin: full system access; manages administrator roles and scopes.
+league_admin: manages assigned competitions, fixtures, standings and related news.
+club_admin: manages assigned clubs and related news.
+
+Database RLS is the security boundary. Hidden dashboard tabs only affect usability. The database functions grant_admin_access(email, role, competition_ids, club_ids) and list_admin_access() handle role assignment and directory listing. The target user must first exist in Supabase Auth.
+
+Public policies expose active visible competitions and clubs; fixtures and standings for visible competitions; published news; active partners; and safe settings. Private records require the appropriate scope. The league-media bucket accepts PNG/JPEG/WebP images up to 5 MB. New files use uploader user-ID folders. Content changes are recorded in content_audit_log for superadmin review.
+
+Keep public sign-up disabled. Never put a service-role key in browser code. Create Auth accounts before granting roles. Keep two trusted superadmins before removing the temporary account. Do not rerun supabase-schema.sql on the secured production database.
+
+CONTENT WORKFLOW
+Create a fixture for the intended competition and season. Enter non-negative integer scores. Set status to finished and verified to true. Rebuild the table from verified finished results. Ranking is points, goal difference, goals scored, wins, then club name. A win is 3 points, a draw 1 point, plus any administrator-entered adjustment.
+
+TESTING
+Run: node --test tests/*.test.cjs
+At handover, 12 tests pass. They cover role navigation, failed scope queries, sign-out, auth callback timing, season-specific standings, verified scores, table rebuild errors, audit restrictions, page-specific requests, request failures and early page rendering.
+
+The public website returned HTTP 200 and served the updated page-specific loading code. Public build isolation and admin build output were verified locally.
+
+REMAINING WORK
+1. Create the separate admin Vercel project and test real superadmin sign-in.
+2. Configure Supabase Auth redirects and password recovery for the admin URL.
+3. Create a disposable Auth user; test league and club scope isolation; deactivate that user afterwards.
+4. Test media permissions, audit display, and the fixture-to-table workflow for each role.
+5. Import approved official club, fixture, competition and news data.
+6. Configure scheduled backups and perform a restore test.
+7. Add the final admin domain, for example malfaadmin.com, and update Auth URLs.
+8. Plan the mobile app after web operations and data are stable.
+
+TROUBLESHOOTING
+If public data is missing, check the Supabase URL and publishable key in js/cms-config.js, RLS and browser errors. Public pages stop waiting quickly and show an unavailable message if the database cannot be reached.
+If admin login fails, check the separate admin deployment, Supabase Auth redirect URLs, Supabase SDK loading and an active admin_users row.
+If an admin sees no records, check admin_competitions or admin_clubs assignments, season values, active/visible flags and RLS.
+If standings are wrong, check that fixtures are finished, verified, in the current season and have integer scores; then rebuild.
+
+HANDOVER CHECKLIST
+[ ] Confirm GitHub and Vercel owner accounts.
+[ ] Keep production connected to 06imperialfc-ux/malfa-football-hub.
+[ ] Confirm Supabase project remains healthy.
+[ ] Test temporary superadmin sign-in.
+[ ] Deploy separate admin Vercel project with MALFA_DEPLOYMENT=admin and output dist.
+[ ] Configure Supabase Auth URLs and disable public sign-up.
+[ ] Test league and club scope isolation and access management.
+[ ] Test uploads, audit history and fixture-to-table workflow.
+[ ] Import official data and configure/test backups.
+[ ] Replace temporary access with permanent trusted superadmins.
+
+This is a handover record, not a password vault. Update after each deployment, migration, domain change or release.
