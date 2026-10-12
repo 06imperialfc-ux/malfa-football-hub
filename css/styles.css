@@ -332,6 +332,7 @@ html[data-theme="dark"] .status.verified { background: #153429; border-color: #2
 .checkbox-label input { width: 18px; height: 18px; accent-color: var(--brand); }
 .check-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; }
 .check-chip { display: flex; gap: 7px; align-items: center; padding: 8px; border: 1px solid var(--line); font-size: .78rem; }
+#accessClubChecks .check-chip { justify-content: center; text-align: center; }
 .admin-list { display: grid; gap: 9px; max-height: 760px; overflow-y: auto; }
 .admin-list-item { display: grid; grid-template-columns: 58px minmax(0,1fr) auto; align-items: center; gap: 14px; padding: 13px; border: 1px solid var(--line); background: var(--bg); }
 .admin-list-item img, .admin-thumb-placeholder { width: 58px; height: 58px; display: grid; place-items: center; object-fit: contain; background: var(--surface); color: var(--brand); font-size: .65rem; font-weight: 900; }
@@ -362,6 +363,26 @@ html[data-theme="dark"] .status.verified { background: #153429; border-color: #2
 .admin-overview-head, .admin-card-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; }
 .admin-overview-head { margin-bottom: 20px; }
 .admin-overview-head h2, .admin-card-heading h2 { margin: 0; }
+.admin-card-heading { margin-bottom: 22px; }
+.club-editor { max-width: 920px; margin: 0 auto; }
+.club-editor-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+.club-editor-heading h2 { margin: 0; }
+.club-step-status { flex: 0 0 auto; color: var(--brand); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; }
+.club-wizard-progress { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin: 0 0 30px; padding: 0; list-style: none; }
+.club-wizard-progress li { display: flex; align-items: center; gap: 9px; min-width: 0; padding: 10px; border-bottom: 3px solid var(--line); color: var(--muted); font-size: .72rem; font-weight: 850; }
+.club-wizard-progress li span { flex: 0 0 25px; width: 25px; height: 25px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; }
+.club-wizard-progress li.active { border-bottom-color: var(--brand); color: var(--ink); }
+.club-wizard-progress li.active span, .club-wizard-progress li.complete span { border-color: var(--brand); background: var(--brand); color: #fff; }
+.club-step { min-height: 300px; }
+.club-step[hidden] { display: none; }
+.club-step h3 { margin: 0 0 6px; font-family: var(--display); font-size: 1.8rem; }
+.club-wizard-actions { display: grid; grid-template-columns: auto 1fr auto auto; gap: 10px; align-items: center; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
+.club-review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.club-review-grid > div { display: grid; gap: 3px; padding: 16px; border: 1px solid var(--line); background: var(--surface); }
+.club-review-grid small { color: var(--muted); font-size: .67rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.club-review-grid span { color: var(--muted); font-size: .82rem; }
+.club-editor.editing .club-step { min-height: 0; margin-top: 26px; padding-top: 24px; border-top: 1px solid var(--line); }
+.club-editor.editing [data-club-step="1"] { margin-top: 0; padding-top: 0; border-top: 0; }
 .admin-metrics { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 18px; }
 .admin-metric { min-width: 0; padding: 20px; border: 1px solid var(--line); border-top: 3px solid var(--brand); background: var(--card); }
 .admin-metric span, .admin-metric small { display: block; color: var(--muted); }
@@ -452,6 +473,12 @@ button:disabled { cursor: wait; opacity: .62; }
 @media (max-width: 480px) {
   .admin-metrics { grid-template-columns: 1fr 1fr; }
   .admin-metric { padding: 15px; }
+  .admin-card-heading, .club-editor-heading { align-items: flex-start; flex-direction: column; }
+  .club-wizard-progress { grid-template-columns: 1fr 1fr; }
+  .club-review-grid { grid-template-columns: 1fr; }
+  .club-wizard-actions { grid-template-columns: 1fr 1fr; }
+  .club-wizard-actions > span { display: none; }
+  .club-wizard-actions .button { width: 100%; }
   .admin-loading { padding: 82px 22px 24px; }
   .admin-loader { top: 24px; left: 22px; }
   .display { font-size: 3.15rem; }

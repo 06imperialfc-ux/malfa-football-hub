@@ -5,9 +5,10 @@ const fs=require('node:fs');
 const source=fs.readFileSync(require('node:path').join(__dirname,'../js/admin.js'),'utf8');
 function setup(){
   const nodes=new Map();
-  const context=vm.createContext({window:{},document:{addEventListener(){},querySelector(s){if(!nodes.has(s))nodes.set(s,{hidden:false});return nodes.get(s)}},setTimeout,clearTimeout,URL,console});
+  const lists=new Map();
+  const context=vm.createContext({window:{},document:{addEventListener(){},querySelector(s){if(!nodes.has(s))nodes.set(s,{hidden:false,querySelectorAll(q){return lists.get(q)||[]}});return nodes.get(s)},querySelectorAll(s){return lists.get(s)||[]}},setTimeout,clearTimeout,URL,console});
   vm.runInContext(source,context);
-  return {run:code=>vm.runInContext(code,context),nodes};
+  return {run:code=>vm.runInContext(code,context),nodes,lists};
 }
 test('club and league admins cannot navigate to superadmin panels',()=>{
   const {run}=setup();
@@ -65,4 +66,19 @@ test('non-superadmins cannot populate role editing controls',()=>{
   const {run}=setup();
   run('state.adminRole="club_admin";state.admins=[{user_id:"target"}]');
   assert.doesNotThrow(()=>run('editAccess("target")'));
+});
+test('administrator access list binds every edit button without a selector crash',()=>{
+  const {run,lists}=setup();
+  const button={dataset:{editAccess:'target'},addEventListener(type,handler){this.type=type;this.handler=handler}};
+  lists.set('[data-edit-access]',[button]);
+  run(`state.adminRole="super_admin";state.competitions=[];state.clubs=[];state.admins=[{user_id:"target",email:"admin@example.com",role:"club_admin",active:true,competition_ids:[],club_ids:[]}]`);
+  assert.doesNotThrow(()=>run('renderAccess()'));
+  assert.equal(button.type,'click');
+  assert.equal(typeof button.handler,'function');
+});
+test('club onboarding controls required by the dashboard script exist',()=>{
+  const html=fs.readFileSync(require('node:path').join(__dirname,'../admin.html'),'utf8');
+  for(const id of ['clubDirectoryView','clubEditorView','startClubOnboarding','clubWizardNext','clubWizardBack','saveClubButton','cancelClubEditor']){
+    assert.match(html,new RegExp(`id=["']${id}["']`));
+  }
 });

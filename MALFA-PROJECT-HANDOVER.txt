@@ -26,7 +26,7 @@ User ID: 6ec5873d-aa8b-4152-ad81-e1ca581e7d52
 Role: super_admin; active: true
 Never store its password or any database/service-role secret in Git or this file.
 
-Live checks confirmed the superadmin can manage MPL and read the administrator directory. A nonexistent user has no superadmin or competition-management rights and cannot see the directory or audit records. These checks used rolled-back transactions. The separate admin Vercel deployment and real browser login test remain outstanding.
+Live checks confirmed the superadmin can manage MPL and read the administrator directory. A nonexistent user has no superadmin or competition-management rights and cannot see the directory or audit records. These checks used rolled-back transactions. The production administrator login and password-recovery screens are live at https://malfa-football-hub.vercel.app/malfa-control/. A complete signed-in production workflow test for each role remains outstanding.
 
 REPOSITORY MAP
 Public pages: index.html, matches.html, fixtures.html, standings.html, clubs.html, club.html, news.html, article.html, competitions.html, tournaments.html, partners.html, about.html, contact.html, privacy.html and 404.html.
@@ -63,19 +63,22 @@ Create a fixture for the intended competition and season. Enter non-negative int
 
 TESTING
 Run: node --test tests/*.test.cjs
-At handover, 12 tests pass. They cover role navigation, failed scope queries, sign-out, auth callback timing, season-specific standings, verified scores, table rebuild errors, audit restrictions, page-specific requests, request failures and early page rendering.
+At handover, 14 tests pass. They cover role navigation, failed scope queries, sign-out, auth callback timing, season-specific standings, verified scores, table rebuild errors, audit restrictions, access-control button binding, club-onboarding controls, page-specific requests, request failures and early page rendering.
 
 The public website returned HTTP 200 and served the updated page-specific loading code. Public build isolation and admin build output were verified locally.
 
 REMAINING WORK
-1. Create the separate admin Vercel project and test real superadmin sign-in.
-2. Configure Supabase Auth redirects and password recovery for the admin URL.
+1. Complete signed-in production workflow tests for superadmin, league-admin and club-admin accounts.
+2. Create a separate admin Vercel project and domain when ready; the current hidden production admin URL already supports Supabase password recovery.
 3. Create a disposable Auth user; test league and club scope isolation; deactivate that user afterwards.
 4. Test media permissions, audit display, and the fixture-to-table workflow for each role.
 5. Import approved official club, fixture, competition and news data.
 6. Configure scheduled backups and perform a restore test.
 7. Add the final admin domain, for example malfaadmin.com, and update Auth URLs.
-8. Plan the mobile app after web operations and data are stable.
+8. Design the future father_admin role and dashboard. It should oversee administrator access and the audit trail, not manage clubs, fixtures or competition content. Confirm the exact hierarchy and revocation rules before adding any migration or policy.
+9. Add match scheduling, including an optional automatic scheduling system with conflict and venue checks.
+10. Add staged player registration with identity, eligibility, club assignment, approval and audit history.
+11. Plan the mobile app after web operations and data are stable.
 
 TROUBLESHOOTING
 If public data is missing, check the Supabase URL and publishable key in js/cms-config.js, RLS and browser errors. Public pages stop waiting quickly and show an unavailable message if the database cannot be reached.
