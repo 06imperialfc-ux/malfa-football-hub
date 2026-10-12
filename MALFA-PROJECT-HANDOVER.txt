@@ -63,7 +63,9 @@ Create a fixture for the intended competition and season. Enter non-negative int
 
 TESTING
 Run: node --test tests/*.test.cjs
-At handover, 14 tests pass. They cover role navigation, failed scope queries, sign-out, auth callback timing, season-specific standings, verified scores, table rebuild errors, audit restrictions, access-control button binding, club-onboarding controls, page-specific requests, request failures and early page rendering.
+At handover, 16 tests pass. They cover role navigation, failed scope queries, sign-out, auth callback timing, season-specific standings, verified scores, table rebuild errors, audit restrictions, access-control button binding, guided add workflows, review-stage save protection, page-specific requests, request failures and early page rendering.
+
+Adding clubs, matches, news, divisions, tournaments and partners uses staged onboarding. Required identity fields are validated before continuing. Non-essential scheduling, audience, media, description and presentation stages can be skipped. Editing an existing record opens its full form immediately.
 
 The public website returned HTTP 200 and served the updated page-specific loading code. Public build isolation and admin build output were verified locally.
 

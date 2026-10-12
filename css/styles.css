@@ -369,6 +369,7 @@ html[data-theme="dark"] .status.verified { background: #153429; border-color: #2
 .club-editor-heading h2 { margin: 0; }
 .club-step-status { flex: 0 0 auto; color: var(--brand); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; }
 .club-wizard-progress { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin: 0 0 30px; padding: 0; list-style: none; }
+.club-wizard-progress.three-steps { grid-template-columns: repeat(3,1fr); }
 .club-wizard-progress li { display: flex; align-items: center; gap: 9px; min-width: 0; padding: 10px; border-bottom: 3px solid var(--line); color: var(--muted); font-size: .72rem; font-weight: 850; }
 .club-wizard-progress li span { flex: 0 0 25px; width: 25px; height: 25px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; }
 .club-wizard-progress li.active { border-bottom-color: var(--brand); color: var(--ink); }
@@ -377,12 +378,15 @@ html[data-theme="dark"] .status.verified { background: #153429; border-color: #2
 .club-step[hidden] { display: none; }
 .club-step h3 { margin: 0 0 6px; font-family: var(--display); font-size: 1.8rem; }
 .club-wizard-actions { display: grid; grid-template-columns: auto 1fr auto auto; gap: 10px; align-items: center; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
+.flow-wizard-actions { grid-template-columns: auto 1fr auto auto auto auto; }
+.flow-wizard-actions .admin-text-button { margin: 0; white-space: nowrap; }
+.optional-step { border-left: 3px solid var(--brand); padding-left: 18px; }
 .club-review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .club-review-grid > div { display: grid; gap: 3px; padding: 16px; border: 1px solid var(--line); background: var(--surface); }
 .club-review-grid small { color: var(--muted); font-size: .67rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
 .club-review-grid span { color: var(--muted); font-size: .82rem; }
 .club-editor.editing .club-step { min-height: 0; margin-top: 26px; padding-top: 24px; border-top: 1px solid var(--line); }
-.club-editor.editing [data-club-step="1"] { margin-top: 0; padding-top: 0; border-top: 0; }
+.club-editor.editing [data-club-step="1"], .club-editor.editing [data-flow-step="1"] { margin-top: 0; padding-top: 0; border-top: 0; }
 .admin-metrics { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 18px; }
 .admin-metric { min-width: 0; padding: 20px; border: 1px solid var(--line); border-top: 3px solid var(--brand); background: var(--card); }
 .admin-metric span, .admin-metric small { display: block; color: var(--muted); }

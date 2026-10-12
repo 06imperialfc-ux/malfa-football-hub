@@ -82,3 +82,23 @@ test('club onboarding controls required by the dashboard script exist',()=>{
     assert.match(html,new RegExp(`id=["']${id}["']`));
   }
 });
+test('every addable admin section has a guided directory, editor, review and skip control',()=>{
+  const html=fs.readFileSync(require('node:path').join(__dirname,'../admin.html'),'utf8');
+  for(const name of ['match','news','division','tournament','partner']){
+    assert.match(html,new RegExp(`id=["']${name}DirectoryView["']`));
+    assert.match(html,new RegExp(`id=["']${name}EditorView["']`));
+    assert.match(html,new RegExp(`data-start-flow=["']${name}["']`));
+    assert.match(html,new RegExp(`data-skip-flow=["']${name}["']`));
+  }
+  assert.equal((html.match(/data-flow-review/g)||[]).length,5);
+  assert.ok((html.match(/data-optional=["']true["']/g)||[]).length>=5);
+});
+test('guided additions cannot save before review while direct edits can save immediately',()=>{
+  const {run}=setup();
+  run('state.flows.match.mode="add";state.flows.match.step=1');
+  assert.equal(run('guidedReadyToSave("match")'),false);
+  run('state.flows.match.step=4');
+  assert.equal(run('guidedReadyToSave("match")'),true);
+  run('state.flows.match.mode="edit";state.flows.match.step=1');
+  assert.equal(run('guidedReadyToSave("match")'),true);
+});
