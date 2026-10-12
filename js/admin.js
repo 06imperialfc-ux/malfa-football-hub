@@ -118,18 +118,20 @@ function editAccess(id){
   renderAccessScopes();openGuidedFlow("access","edit",admin.email);notice("Administrator access loaded for editing.","info");
 }
 function bindAudit(){
-  const panel=$('[data-panel="access"]');
-  panel.insertAdjacentHTML("beforeend",'<section class="admin-card"><h2>Recent activity</h2><p class="muted">The latest 50 recorded changes. Only superadmins can view this history.</p><button type="button" class="button secondary" id="loadAudit">Load activity</button><div id="auditList" class="admin-list" aria-live="polite"></div></section>');
-  $("#loadAudit").addEventListener("click",loadAudit);
+  const directory=$("#accessDirectoryView"),heading=$(".admin-card-heading",directory),list=$("#adminAccessList");
+  heading.insertAdjacentHTML("beforeend",'<button type="button" class="button secondary small" id="toggleAudit" aria-expanded="false" aria-controls="auditPanel">Activity log</button>');
+  list.insertAdjacentHTML("beforebegin",'<aside id="auditPanel" class="admin-audit-panel" hidden><div class="admin-audit-head"><div><strong>Recent activity</strong><small>Latest 50 changes · superadmins only</small></div><button type="button" class="text-button" id="refreshAudit">Refresh</button></div><div id="auditList" class="audit-log-list" aria-live="polite"></div></aside>');
+  $("#toggleAudit").addEventListener("click",async e=>{const panel=$("#auditPanel"),opening=panel.hidden;panel.hidden=!opening;e.currentTarget.setAttribute("aria-expanded",String(opening));e.currentTarget.textContent=opening?"Hide activity":"Activity log";if(opening&&!panel.dataset.loaded)await loadAudit()});
+  $("#refreshAudit").addEventListener("click",loadAudit);
 }
 async function loadAudit(){
   if(state.adminRole!=="super_admin")return;
-  const button=$("#loadAudit"),mount=$("#auditList");button.disabled=true;
+  const toggle=$("#toggleAudit"),refresh=$("#refreshAudit"),panel=$("#auditPanel"),mount=$("#auditList");toggle.disabled=true;refresh.disabled=true;mount.innerHTML='<p class="muted">Loading activity…</p>';
   try{
     const {data,error}=await client().from("content_audit_log").select("id,occurred_at,actor_id,action,table_name,record_key").order("id",{ascending:false}).limit(50);
     if(error)throw error;
     if(state.adminRole!=="super_admin")return;
-    mount.innerHTML=(data||[]).map(row=>{const actor=state.admins.find(a=>a.user_id===row.actor_id);return `<article class="admin-list-item"><div><h3>${esc(row.action)} · ${esc(row.table_name)}</h3><p>${esc(fmt(row.occurred_at))} · ${esc(actor?.email||row.actor_id||"Database operation")}</p><small>${esc(row.record_key||"")}</small></div></article>`}).join("")||'<p class="muted">No activity recorded yet.</p>';
-  }catch(err){notice(friendlyError(err,"Unable to load activity."),"error")}finally{button.disabled=false}
+    mount.innerHTML=(data||[]).map(row=>{const actor=state.admins.find(a=>a.user_id===row.actor_id);return `<article class="audit-log-row"><strong>${esc(row.action)} · ${esc(row.table_name)}</strong><span>${esc(fmt(row.occurred_at))} · ${esc(actor?.email||row.actor_id||"Database operation")}</span><small>${esc(row.record_key||"")}</small></article>`}).join("")||'<p class="muted">No activity recorded yet.</p>';panel.dataset.loaded="true";
+  }catch(err){mount.innerHTML='<p class="muted">Activity could not be loaded. Try Refresh.</p>';notice(friendlyError(err,"Unable to load activity."),"error")}finally{toggle.disabled=false;refresh.disabled=false}
 }
 document.addEventListener("DOMContentLoaded",init);

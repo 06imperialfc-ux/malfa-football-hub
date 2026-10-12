@@ -334,6 +334,16 @@ html[data-theme="dark"] .status.verified { background: #153429; border-color: #2
 .check-chip { display: flex; gap: 7px; align-items: center; padding: 8px; border: 1px solid var(--line); font-size: .78rem; }
 #accessClubChecks .check-chip { justify-content: center; text-align: center; }
 .admin-list { display: grid; gap: 9px; max-height: 760px; overflow-y: auto; }
+.admin-audit-panel { margin: -4px 0 18px; padding: 12px 14px; border: 1px solid var(--line); border-left: 3px solid var(--brand); background: var(--surface); }
+.admin-audit-panel[hidden] { display: none; }
+.admin-audit-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 9px; }
+.admin-audit-head strong, .admin-audit-head small { display: block; }
+.admin-audit-head small { margin-top: 2px; color: var(--muted); font-size: .68rem; }
+.audit-log-list { display: grid; max-height: 250px; overflow-y: auto; border-top: 1px solid var(--line); }
+.audit-log-row { display: grid; gap: 2px; padding: 9px 2px; border-bottom: 1px solid var(--line); font-size: .72rem; }
+.audit-log-row:last-child { border-bottom: 0; }
+.audit-log-row span, .audit-log-row small { color: var(--muted); }
+.audit-log-row small { overflow-wrap: anywhere; font-size: .65rem; }
 .admin-list-item { display: grid; grid-template-columns: 58px minmax(0,1fr) auto; align-items: center; gap: 14px; padding: 13px; border: 1px solid var(--line); background: var(--bg); }
 .admin-list-item img, .admin-thumb-placeholder { width: 58px; height: 58px; display: grid; place-items: center; object-fit: contain; background: var(--surface); color: var(--brand); font-size: .65rem; font-weight: 900; }
 .admin-list-item h3 { margin: 2px 0; font-size: .98rem; }

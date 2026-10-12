@@ -62,6 +62,12 @@ test('non-superadmins cannot query audit history',async()=>{
   run('state.adminRole="league_admin";state.client={from(){throw new Error("unexpected query")}}');
   await assert.doesNotReject(run('loadAudit()'));
 });
+test('audit history uses a compact on-demand activity panel',()=>{
+  assert.match(source,/id=\"toggleAudit\"/);
+  assert.match(source,/class=\"admin-audit-panel\"/);
+  assert.match(source,/Latest 50 changes · superadmins only/);
+  assert.doesNotMatch(source,/id=\"loadAudit\"/);
+});
 test('non-superadmins cannot populate role editing controls',()=>{
   const {run}=setup();
   run('state.adminRole="club_admin";state.admins=[{user_id:"target"}]');
